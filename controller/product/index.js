@@ -1,4 +1,5 @@
 const { ObjectId } = require("mongodb");
+
 const { client } = require("../../db/connect.js");
 
 const getAllCategories = async (req, res, next) => {
@@ -33,4 +34,32 @@ const getDetailDish = async( req, res, next)=>{
     const document = await collection.findOne({_id: ObjectId(req.params.dishId) });
     return res.status(200).json(document)
 }
-module.exports = { getAllCategories, getDish, getDetailDish };
+
+const addDish = async ( req, res, next)=>{
+  // console.log(req.file);
+  // console.log( req.body);
+  const {name, description, category, price} = req.body;
+  const path = req.file.path;
+  const db = client.db("orderfood");
+  const collection = db.collection("dish");
+  const resultInsert = await collection.insertOne({
+    name: name,
+    category: category,
+    price: parseInt(price),
+    calories: 12,
+    disc : description,
+    path: path,
+  });
+  console.log( resultInsert)
+  if( resultInsert){
+    return res.status(201).json({
+      msg: "Them thanh cong"
+    })
+  }
+  return res.status(500).json({
+    msg: "Them that bai roi nhe"
+  })
+  
+}
+
+module.exports = { getAllCategories, getDish, getDetailDish, addDish };

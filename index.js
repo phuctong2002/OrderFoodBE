@@ -11,6 +11,7 @@ const router = require("./router");
 const {connect} = require("./db/connect");
 
 app.use(cors());
+app.use( "/uploads",express.static('uploads'))
 app.use( bodyParser.json());
 app.use( bodyParser.urlencoded({extended: true}));
 app.use( bodyParser.raw());
