@@ -47,6 +47,11 @@ router.route("/").post((req, res, next) => {
   });
 });
 
+
+
+
+
+
 router.route("/category").get(getAllCategories);
 router.route("/category/:category").get(getDish);
 router.route("/dish/:dishId").get(getDetailDish);

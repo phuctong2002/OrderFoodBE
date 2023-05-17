@@ -79,4 +79,59 @@ const register = ( req, res, next)=>{
 }
 
 
-module.exports=  {login, register};
+const getAllInfo = (req, res, next)=>{
+    const authHeader = req.headers["authorization"]
+    const token = authHeader && authHeader.split(" ")[1]
+    console.log( token );
+    try{
+        const decoded = jwt.verify(token, process.env.PRIVATE_KEY);
+        console.log(decoded.email);
+        return res.status(200).json({
+            msg: "token hop le",
+            data: {
+                firstName: decoded.firstName,
+                lastName: decoded.lastName,
+                phone: decoded.phone,
+                email: decoded.email,
+                address: decoded.address,
+            }
+        })
+    }catch(error){
+        console.log("token sai hoac het han roi nhe anh em");
+        return res.status(400).json({
+            msg: "Lay thong tin nguoi dung su dung token"
+        })
+    }
+}
+
+
+const updateInfo = async(req, res, next)=>{
+    console.log( req.body);
+    const {oldEmail, firstName, lastName, phone, email, address} = req.body;
+    const db = client.db("orderfood");
+    const collection = db.collection("user");
+    const updateResult = await collection.updateOne({email: oldEmail}, {$set:{firstName: firstName, lastName: lastName, phone: phone, email: email, address: address}});
+    if( updateResult.matchedCount == 1 ){
+        console.log("update thanh cong neh");
+         
+        const result = await collection.findOne({"email": email});  
+        const {nfirstName, nlastName, nphone, nemail, naddress} = result;
+        return res.status(200).json({
+            msg: "update thanh cong nhe",
+            info: {
+                "firstName": nfirstName,
+                "lastName": nlastName, 
+                "phone": nphone, 
+                "email" : email, 
+                "address": address
+            },
+        })
+    }else{
+        return res.status(422).json({
+            msg: "update khong thanh cong neh"
+        })
+    }
+    
+}
+
+module.exports=  {login, register, getAllInfo, updateInfo};
