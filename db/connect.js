@@ -8,5 +8,4 @@ async function connect(){
     const db = client.db(dbName);    
 }
 
-
 module.exports = {connect, client};

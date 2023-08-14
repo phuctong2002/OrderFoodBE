@@ -6,7 +6,7 @@ const login = async( req, res, next)=>{
     const db = client.db("orderfood");
     const collection = db.collection("user");
     const document = await collection.findOne({email: email});
-    console.log( document);
+    console.log( document.isAdmin);
     if( document){
         const match = await bcrypt.compare( password, document.hashPassword)
         if( match){
@@ -22,7 +22,8 @@ const login = async( req, res, next)=>{
                 lastName: document.lastName,
                 phone: document.phone,
                 email: document.email,
-                token,
+                isAdmin: document.isAdmin,
+                token: token,
             })
         }else{
             return res.status(404).json({
